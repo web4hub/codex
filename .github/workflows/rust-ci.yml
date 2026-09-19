@@ -1,0 +1,39 @@
+name: Rust CI Quality Gate
+
+on:
+  push:
+    branches:
+      - main
+      - 'codex/issue-*'
+  pull_request:
+    branches:
+      - main
+      - 'codex/issue-*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  verify-quality:
+    name: Lint and Format Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: fmt, clippy
+
+      - name: Rust Cache Setup
+        uses: swatinem/rust-cache@v2
+        with:
+          shared-key: "codex-ci-cache"
+
+      - name: Verify Code Formatting
+        run: cargo fmt --check
+
+      - name: Execute Strict Clippy Analysis
+        run: cargo clippy --workspace --all-targets -- -D warnings
