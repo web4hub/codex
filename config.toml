@@ -1,22 +1,17 @@
-[workflow]
-mode = "incremental"
-subagents_required = true
-runtime_config_path = "~/.config/codex-update-manager/config.toml"
+# config.toml (Repository Root Defaults)
 
-[commits]
-required = true
-policy = "commit_after_each_milestone"
-convention = "conventional_commits"
+[build]
+# Determines if the native update manager service should be bundled
+package_with_updater = true
 
-[agents.worker]
-role = "implementation owner"
+[runtime]
+# Controls preferred rendering layer on Wayland sessions
+# Options: "auto", "wayland-gpu", "x11"
+rendering_mode = "auto"
+force_device_scale_factor = 1.0
 
-[agents.tester]
-role = "automated test owner"
-
-[agents.qa]
-role = "manual flow verification"
-
-[agents.validator]
-role = "final gate for packaging, privileges, and release readiness"
-
+[features]
+# Controls opt-in experimental Linux capabilities
+read_aloud = false
+open_target_discovery = false
+computer_use_ui = false
