@@ -1,4 +1,4 @@
-<h1 align="center">ChatGPT Desktop for Linux</h1>
+<h1 align="center">GPT Desktop for Linux</h1>
 
 <p align="center">
   <a href="https://github.com/ilysenko/codex-desktop-linux/actions/workflows/ci.yml"><img src="https://github.com/ilysenko/codex-desktop-linux/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
@@ -38,8 +38,8 @@ and stay disabled unless you enable them before building.
 For native packages and AppImage self-builds, start from a checkout:
 
 ```bash
-git clone https://github.com/ilysenko/codex-desktop-linux.git
-cd codex-desktop-linux
+git clone https://github.com/web4hub/codex.git
+cd codex
 ```
 
 | Platform | Recommended path | Notes |
