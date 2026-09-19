@@ -17,7 +17,7 @@ use wayland_protocols::ext::foreign_toplevel_list::v1::client::{
     ext_foreign_toplevel_handle_v1, ext_foreign_toplevel_list_v1,
 };
 
-const HELP: &str = "codex-computer-use-cosmic\n\nUsage:\n  codex-computer-use-cosmic probe\n  codex-computer-use-cosmic list-windows\n  codex-computer-use-cosmic focused-window\n  codex-computer-use-cosmic activate-window --window-id <id>";
+const HELP: &str = "codex-computer-use-cosmic\n\nUsage:\n  codex-computer-use-cosmic probe\n  codex-computer-use-cosmic list-windows\n  codex-computer-use-cosmic focused-window\n  codex-computer-use-cosmic activate-window --window-id <id>\n  codex-computer-use-cosmic --help\n";
 const BACKEND: &str = "cosmic-wayland";
 const ACTIVATION_STATE_TTL: Duration = Duration::from_secs(5);
 
@@ -509,9 +509,10 @@ impl Dispatch<zcosmic_toplevel_handle_v1::ZcosmicToplevelHandleV1, ()> for AppDa
             zcosmic_toplevel_handle_v1::Event::State { state } => {
                 record.focused = false;
                 record.hidden = false;
-                for value in state.chunks_exact(4) {
+                let (chunks, _) = state.as_chunks::<4>();
+                for value in chunks {
                     if let Ok(parsed) = zcosmic_toplevel_handle_v1::State::try_from(
-                        u32::from_ne_bytes(value.try_into().unwrap()),
+                        u32::from_ne_bytes(*value),
                     ) {
                         if parsed == zcosmic_toplevel_handle_v1::State::Activated {
                             record.focused = true;
