@@ -1,1 +1,24 @@
+# .codex/config.toml (Project-Root Override)
+
+# Model Selection & Behavior (Must match your global provider's capabilities)
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+model_verbosity = "medium"
+
+# Security & Execution Boundaries
+# Choices: "read-only", "workspace-write" (default), or "danger-full-access"
+sandbox_mode = "workspace-write"
+
+# Prompt Triggers: "never" (dangerous), "on-request" (asks before escaping sandbox)
+approval_policy = "on-request"
+
+# Tool and Behavior Tweaks
+web_search = "live"
+personality = "pragmatic"
+
+[features]
+apps = true
+multi_agent = true
+goals = true       # Enables the /goal TUI loop for bounded objectives
+hooks = true
 
