@@ -170,7 +170,11 @@ Wayland when available for better Electron popup positioning, then falls back
 to Electron's automatic Wayland handling. See
 [Troubleshooting](docs/troubleshooting.md) for GPU, Vulkan, and `/tmp noexec`
 workarounds.
+## Pacman Package Validation
 
+- Built: `codex-desktop-2026.04.28.000000+ci2-1-x86_64.pkg.tar.zst`
+- Verified updater binary, user service, update-builder bundle, and packaged runtime helper.
+- 
 ## Feature Matrix
 
 ### Core And Platform Support
