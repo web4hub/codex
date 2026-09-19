@@ -1,0 +1,7 @@
+lmake build-app
+make build-app-fresh
+make build-app DMG=/path/to/Codex.dmg
+Equivalent direct commands:
+./install.sh
+./install.sh /path/to/Codex.dmg
+./install.sh --fresh
