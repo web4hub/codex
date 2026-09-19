@@ -40,4 +40,7 @@ git add computer-use-linux/src/bin/codex-computer-use-cosmic.rs
 git commit -m "Fix COSMIC state parsing Clippy lint"
 git push origin codex/issue-710-cli-optional-deps
 git clone https://github.com/web4hub/codex.git
-cd codex
+cd codexbash scripts/ci/update-nix-hashes.sh
+git add flake.nix nix/native-modules/package.json nix/native-modules/package-lock.json
+git commit -m "fix(nix): refresh upstream DMG pins"
+git push
