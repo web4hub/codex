@@ -1,0 +1,54 @@
+## 📦 Installation Commands## Ubuntu / Debian / Linux Mint
+On Debian-based systems, it is best to install the build-essential meta-package, which includes gcc, make, and other necessary development tools.
+
+* To install GCC (Recommended):
+```bash
+sudo apt update
+sudo apt install build-essential
+```
+* To install Clang:
+```bash
+sudo apt install clang
+```
+
+## Fedora / RHEL / CentOS
+Fedora and Red Hat-based systems group these utilities into a single development bundle.
+
+* To install GCC (Recommended):
+```bash
+sudo dnf groupinstall "Development Tools"
+```
+* To install Clang:
+```
+sudo dnf install clang
+```
+
+## Arch Linux / Manjaro
+Arch uses a package group called base-devel for standard compilation tools.
+
+* To install GCC (Recommended):
+```bash
+sudo pacman -Syu base-devel
+```
+* To install Clang:
+```bash
+sudo pacman -S clang
+```
+
+## ✅ Verifying the Installation
+Once the installation finishes, you can verify that the C compiler is ready by checking its version:
+```cmd
+gcc --version# OR
+clang --version
+```
+After verifying your C compiler is active, you can safely run the Rust installation script:
+```shell
+curl --proto '=https' --tlsv1.2 -sSf https://rustup.rs | sh
+```
+
+
+* Verify your Rust installation works
+* Create your very first "Hello, World!" project using Cargo
+* Install Rust syntax extensions for your specific code editor (like VS Code or Neovim)
+
+
