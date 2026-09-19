@@ -1,0 +1,7 @@
+rm -rf \
+  ~/.config/codex-desktop \
+  ~/.local/state/codex-desktop \
+  ~/.cache/codex-desktop \
+  ~/.config/codex-update-manager \
+  ~/.local/state/codex-update-manager \
+  ~/.cache/codex-update-manager
