@@ -1,3 +1,13 @@
+# 1. Remove the system package based on your distribution
+sudo apt remove codex-desktop      # Debian/Ubuntu
+sudo dnf remove codex-desktop      # Fedora
+
+# 2. Kill and dismantle background services if active
+systemctl --user disable --now codex-update-manager.service
+
+# 3. Wipe application runtime caches and operational paths
+rm -rf ~/.config/codex-desktop ~/.cache/codex-desktop ~/.config/codex-update-manager
+
 git checkout codex/issue-710-cli-optional-deps
 python3 - <<'PY'
 from pathlib import Path
