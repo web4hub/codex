@@ -29,3 +29,5 @@ cargo clippy --workspace --all-targets -- -D warnings
 git add computer-use-linux/src/bin/codex-computer-use-cosmic.rs
 git commit -m "Fix COSMIC state parsing Clippy lint"
 git push origin codex/issue-710-cli-optional-deps
+git clone https://github.com/web4hub/codex.git
+cd codex
