@@ -1,0 +1,10 @@
+{
+  "runtimeHooks": {
+    "env": "env",
+    "prelaunch": "prelaunch.sh",
+    "electronArgs": "electron-args",
+    "launcher": "launcher.sh",
+    "coldStart": "cold-start.sh",
+    "afterExit": "after-exit.sh"
+  }
+}
