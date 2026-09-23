@@ -39,7 +39,7 @@ For native packages and AppImage self-builds, start from a checkout:
 
 ```bash
 git clone https://github.com/web4hub/codex.git
-cd codex
+cd codeX
 ```
 
 | Platform | Recommended path | Notes |
