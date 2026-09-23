@@ -1,3 +1,7 @@
+git branch -m codex/add-pull-request-template main
+git fetch origin
+git branch -u origin/majn main
+git remote set-head origin -a
 # Stage the modified window manager adapter binary
 git add computer-use-linux/src/bin/codex-computer-use-cosmic.rs
 
