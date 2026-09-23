@@ -8,8 +8,8 @@ This project has two native install entrypoints:
 ## Fast Native Install
 
 ```bash
-git clone https://github.com/ilysenko/codex-desktop-linux.git
-cd codex-desktop-linux
+git clone https://github.com/web4hub/codex.git
+cd codex
 make bootstrap-native
 ```
 
@@ -43,7 +43,7 @@ non-interactive for scripts and CI.
 
 ## Non-Interactive Feature Selection
 
-```bash
+```env
 CODEX_LINUX_FEATURES=remote-mobile-control,read-aloud \
 CODEX_LINUX_DISABLE_FEATURES=conversation-mode \
 PACKAGE_WITH_UPDATER=0 \
