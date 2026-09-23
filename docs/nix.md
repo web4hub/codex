@@ -144,6 +144,14 @@ in
 }
 ```
 
+Set `remoteControl.environmentFile` to a quoted absolute runtime path such as
+`"/run/secrets/codex-remote-control.env"`. Prefix it with `-` only when systemd
+should ignore a missing file. Empty, relative, non-canonical, Nix-context, and
+store-backed paths are rejected. Do not interpolate a path containing secrets:
+Nix can copy it into the store before module validation rejects the
+configuration. The referenced runtime file must be readable by the user service
+and should remain owner-only.
+
 Pinning `github:sadjow/codex-cli-nix` to a release tag or commit is
 recommended for fully reproducible configurations.
 
@@ -169,7 +177,9 @@ sed -n '1,220p' ~/.cache/codex-desktop/launcher.log
 ## Feature Outputs
 
 Flakes do not include the git-ignored `linux-features/features.json` opt-in
-file, so Nix exposes feature-specific app variants.
+file. Nix therefore keeps the existing cache-friendly feature outputs and also
+lets module users select Linux features that have been verified to build
+hermetically.
 
 Remote mobile control:
 
@@ -189,6 +199,25 @@ Computer Use UI only:
 nix run github:ilysenko/codex-desktop-linux#codex-desktop-computer-use-ui
 ```
 
+The Home Manager and NixOS modules accept these feature IDs through
+`programs.codexDesktopLinux.linuxFeatures`:
+
+| Feature ID | Purpose |
+| --- | --- |
+| `appshots` | Linux AppShots capture integration |
+| `directory-only-working-tree-watch` | Bounded directory-only working-tree watches |
+| `frameless-titlebar` | Hide app-provided titlebar controls for compositor-managed decorations |
+| `mcp-helper-reaper` | Cleanup for stale configured MCP helper processes |
+| `node-repl-reaper` | Cleanup for leaked Browser Use `node_repl` helpers |
+| `open-target-discovery` | Linux terminal, editor, and file-manager discovery |
+| `persistent-status-panel` | Persistent `/status` panel state |
+| `remote-mobile-control` | Experimental Linux Remote host and outbound-control adaptation |
+
+The list is validated during module evaluation, then deduplicated and sorted so
+equivalent configurations produce the same derivation. Features that are not in
+this Nix allowlist remain available through the regular opt-in feature flow but
+cannot be selected from a pure flake configuration.
+
 ## Home Manager / NixOS Module
 
 For a declarative install with the mobile remote-control app-server managed by
@@ -204,10 +233,21 @@ systemd instead of the Desktop launcher:
     enable = true;
     computerUseUi.enable = true;
     remoteMobileControl.enable = true;
+    linuxFeatures = [
+      "appshots"
+      "open-target-discovery"
+    ];
     remoteControl.enable = true;
   };
 }
 ```
+
+`remoteMobileControl.enable` remains a compatibility shorthand for adding
+`remote-mobile-control` to the normalized feature list. `computerUseUi.enable`
+remains a dedicated option because it selects the Computer Use UI package path.
+The existing named package outputs use the same package builder with fixed
+arguments. Setting `programs.codexDesktopLinux.package` still selects that
+package directly and takes precedence over module-driven feature selection.
 
 This installs the selected ChatGPT Desktop package variant and starts a user
 `codex-remote-control.service` with:
@@ -237,5 +277,9 @@ Users can opt in locally with:
 cachix use codex-desktop-linux
 ```
 
-The scheduled `Populate Cachix` workflow builds the default package,
-feature-specific package variants, and `.#installer`.
+When a merge to `main` changes the pinned `Codex.dmg` hash, the `Populate
+Cachix` workflow builds the default package, feature-specific package variants,
+the watchdog feature check, and `.#installer`. It uploads and garbage-collects
+each output before starting the next one so the hosted runner does not retain
+every large app variant at once. Maintainers can dispatch the workflow manually
+to backfill the current `main` pin after a skipped or interrupted run.

@@ -161,6 +161,13 @@ function syntheticCurrentAppMainRouteRegistry() {
   ].join("");
 }
 
+function syntheticCurrentSettingsCatalog() {
+  return [
+    "var Vr=`general-settings.linux-desktop.import.profile.keyboard-shortcuts.codex-micro.appshots.appearance.voice.pets.agent.git-settings.data-controls.cloud-settings.cloud-environments.code-review.personalization.usage.debug.browser-use.computer-use.local-environments.worktrees.environments.mcp-settings.hooks-settings.connections.plugins-settings.skills-settings`.split(`.`);",
+    "var Gr=[{slug:`general-settings`},{slug:`linux-desktop`},{slug:`local-environments`},{slug:`worktrees`},{slug:`agent`},{slug:`data-controls`}];",
+  ].join("");
+}
+
 function syntheticComposerBundle() {
   return "const YH={default:e=>e};function sU(e,t){return t??(e==null?[]:Object.entries(e).map(([e,t])=>({name:e,value:t,displayName:(0,YH.default)(e.trim())})))}";
 }
@@ -229,6 +236,10 @@ function rewriteSettingsAssetsWithConsolidatedCurrentLayout(assetsDir) {
   fs.writeFileSync(
     path.join(assetsDir, "app-initial~app-main~automations-page-test.js"),
     syntheticCurrentAppMainRouteRegistry(),
+  );
+  fs.writeFileSync(
+    path.join(assetsDir, "app-initial~app-main~hotkey-window-thread-page~keyboard-shortcuts-settings~thread-app-shell~current-test.js"),
+    syntheticCurrentSettingsCatalog(),
   );
 }
 
@@ -388,13 +399,6 @@ test("agent-workspace feature exposes optional bridge, settings, resources, and 
       [
         [
           "agent-workspace",
-          "env",
-          path.join("agent-workspace", "pin-renderer.env"),
-          ".codex-linux/env.d/agent-workspace-pin-renderer.env",
-          0o644,
-        ],
-        [
-          "agent-workspace",
           "prelaunch",
           path.join("agent-workspace", "install-skill.sh"),
           ".codex-linux/prelaunch.d/agent-workspace-install-skill.sh",
@@ -471,10 +475,7 @@ test("agent-workspace declarative staging copies skill and prelaunch hook into t
         ),
         fs.readFileSync(path.join(featuresRoot, "agent-workspace", "skills", "agent-workspace-linux", "SKILL.md"), "utf8"),
       );
-      assert.equal(
-        fs.readFileSync(path.join(appDir, ".codex-linux", "env.d", "agent-workspace-pin-renderer.env"), "utf8"),
-        "CODEX_LINUX_PIN_RENDERER_URL=1\n",
-      );
+      assert.equal(fs.existsSync(path.join(appDir, ".codex-linux", "env.d", "agent-workspace-pin-renderer.env")), false);
       const hookPath = path.join(appDir, ".codex-linux", "prelaunch.d", "agent-workspace-install-skill.sh");
       assert.match(fs.readFileSync(hookPath, "utf8"), /CODEX_LINUX_FEATURES_DIR/);
       assert.equal((fs.statSync(hookPath).mode & 0o777), 0o755);
@@ -1734,7 +1735,48 @@ test("agent-workspace settings patch supports consolidated current settings bund
     const routeSource = fs.readFileSync(path.join(assetsDir, "app-initial~app-main~automations-page-test.js"), "utf8");
     assert.match(routeSource, new RegExp(SETTINGS_ASSET));
     assert.match(routeSource, /"agent-workspaces":BN\(async\(\)=>\(await Y\(/);
+
+    const catalogSource = fs.readFileSync(
+      path.join(assetsDir, "app-initial~app-main~hotkey-window-thread-page~keyboard-shortcuts-settings~thread-app-shell~current-test.js"),
+      "utf8",
+    );
+    assert.match(catalogSource, /local-environments\.agent-workspaces\.worktrees/);
+    assert.match(catalogSource, /\{slug:`local-environments`\},\{slug:`agent-workspaces`\},\{slug:`worktrees`\}/);
     assert.equal(patchAgentWorkspaceSettingsAssets(tempApp).changed, 0);
+  } finally {
+    fs.rmSync(tempApp, { recursive: true, force: true });
+  }
+});
+
+test("agent-workspace settings patch rejects a partially patched current catalog atomically", () => {
+  const tempApp = fs.mkdtempSync(path.join(os.tmpdir(), "codex-agent-workspace-partial-catalog-"));
+  try {
+    const { assetsDir } = writeSyntheticExtractedApp(tempApp);
+    const catalogPath = path.join(
+      assetsDir,
+      "app-initial~app-main~hotkey-window-thread-page~keyboard-shortcuts-settings~thread-app-shell~current-test.js",
+    );
+    fs.writeFileSync(
+      catalogPath,
+      syntheticCurrentSettingsCatalog().replace(
+        "local-environments.worktrees.environments",
+        "local-environments.agent-workspaces.worktrees.environments",
+      ),
+    );
+    const before = new Map(
+      fs.readdirSync(assetsDir).map((name) => [name, fs.readFileSync(path.join(assetsDir, name))]),
+    );
+
+    const { value: result, warnings } = captureWarns(() => patchAgentWorkspaceSettingsAssets(tempApp));
+
+    assert.equal(result.matched, false);
+    assert.equal(result.changed, 0);
+    assert.match(result.reason, /catalog is partially patched/);
+    assert.ok(warnings.some((warning) => warning.includes("catalog is partially patched")));
+    assert.equal(fs.existsSync(path.join(assetsDir, SETTINGS_ASSET)), false);
+    for (const [name, source] of before) {
+      assert.deepEqual(fs.readFileSync(path.join(assetsDir, name)), source);
+    }
   } finally {
     fs.rmSync(tempApp, { recursive: true, force: true });
   }
